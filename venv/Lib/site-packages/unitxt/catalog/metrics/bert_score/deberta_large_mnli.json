@@ -1,0 +1,4 @@
+{
+    "__type__": "bert_score",
+    "model_name": "microsoft/deberta-large-mnli"
+}

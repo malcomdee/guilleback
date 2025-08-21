@@ -1,0 +1,38 @@
+Metadata-Version: 2.1
+Name: ibm-watson-openscale
+Version: 3.0.14
+Summary: Client library for IBM Watson OpenScale
+Home-page: https://github.ibm.com/watson-developer-cloud/openscale-python-sdk
+Author: IBM Watson
+Author-email: kishore.patel@in.ibm.com
+License: Apache 2.0
+Keywords: Manage production AIwith trust and confidence in outcomeswatson,ibm
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: Apache Software License
+Classifier: Operating System :: OS Independent
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Software Development :: Libraries :: Application Frameworks
+Requires-Python: >=3.5
+Description-Content-Type: text/markdown
+License-File: LICENSE
+Requires-Dist: requests (<3.0,>=2.0)
+Requires-Dist: python-dateutil (>=2.5.3)
+Requires-Dist: ibm-cloud-sdk-core (==3.10.1)
+Requires-Dist: pandas (>=0.25.3)
+
+******************************************
+## Welcome to `ibm_watson_openscale`
+******************************************
+
+``ibm_watson_openscale`` is a python API for IBM Watson OpenScale services.
+
+[![Latest Stable Version](https://img.shields.io/pypi/v/ibm-watson-openscale.svg)](https://pypi.python.org/pypi/ibm-watson-openscale)
+
+
+### [Sphinx documentation](http://ibm-watson-openscale-client.mybluemix.net/)
+============================================================================
+
+

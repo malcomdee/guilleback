@@ -1,0 +1,41 @@
+{
+    "__type__": "task_card",
+    "loader": {
+        "__type__": "load_hf",
+        "path": "Bertievidgen/SimpleSafetyTests",
+        "data_classification_policy": [
+            "public"
+        ]
+    },
+    "task": {
+        "__type__": "task",
+        "input_fields": {
+            "prompt": "str",
+            "id": "str",
+            "harm_area": "str",
+            "category": "str"
+        },
+        "reference_fields": {},
+        "prediction_type": "str",
+        "metrics": [
+            "metrics.granite_guardian.assistant_risk.harm[prediction_type=str,user_message_field=prompt,assistant_message_field=prediction,score_prefix=graniteguardian_]",
+            "metrics.llm_as_judge.safety.llamaguard[score_prefix=llamaguard_]"
+        ]
+    },
+    "templates": {
+        "default": {
+            "__type__": "input_output_template",
+            "input_format": "{prompt}",
+            "output_format": ""
+        }
+    },
+    "__description__": "100 test prompts across five harm areas that LLMs, for the vast majority of applications, should refuse to comply with.",
+    "__tags__": {
+        "languages": [
+            "english"
+        ],
+        "urls": {
+            "arxiv": "https://arxiv.org/abs/2311.08370"
+        }
+    }
+}

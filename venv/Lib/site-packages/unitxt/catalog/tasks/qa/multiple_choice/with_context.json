@@ -1,0 +1,21 @@
+{
+    "__type__": "task",
+    "input_fields": {
+        "context": "Union[Text, Image, Audio, Table, Dialog, Video]",
+        "context_type": "str",
+        "question": "str",
+        "choices": "List[str]"
+    },
+    "reference_fields": {
+        "answer": "Union[int, str]",
+        "choices": "List[str]"
+    },
+    "prediction_type": "str",
+    "augmentable_inputs": [
+        "context",
+        "question"
+    ],
+    "metrics": [
+        "metrics.accuracy"
+    ]
+}

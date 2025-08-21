@@ -1,0 +1,59 @@
+{
+    "display_name": "HAP Detection",
+    "tool_name": "hap",
+    "service_provider_type": "IBM",
+    "description": "Tool to detect Hate, Abuse and Profanity content in text",
+    "inventory_id": "<attribute_value>",
+    "reusable": "true",
+    "category": ["Other"],
+    "framework": ["langchain","langgraph"],
+    "code": {
+        "source_code_url": "",
+        "run_time_details": {
+            "engine": "Python 3.11"
+        }
+    },
+    "config":{
+            "description": "Threshold value for HAP detection",
+            "properties": {
+              "input": {
+                "description": "Input text",
+                "title": "Input",
+                "type": "string"
+            },  
+              "threshold": {               
+                "description": "Threshold",
+                "title": "Threshold",
+                "type": "integer"
+              },
+              "title": "HAPInput",
+              "type": "object"
+            }
+    },
+    "schema":{
+        "properties": {
+        "input": {
+            "description": "Input text",
+            "title": "Input",
+            "type": "string"
+        },  
+        "threshold": {               
+            "description": "Threshold",
+            "title": "Threshold",
+            "type": "integer"
+        }
+        },
+        "required": [
+          "input"
+        ],
+        "title": "HAPInput",
+        "type": "object"
+    },
+    "environment_variables": [
+        "WXG_SERVICE_INSTANCE_ID","WXAI_URL"
+    ],
+    "dependencies": {
+        "remote_services":[],
+        "run_time_packages":[]
+    }
+}

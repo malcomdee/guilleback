@@ -1,0 +1,20 @@
+{
+    "__type__": "metric_pipeline",
+    "main_score": "nDCG",
+    "single_reference_per_prediction": true,
+    "preprocess_steps": [
+        {
+            "__type__": "cast_fields",
+            "fields": {
+                "prediction": "float",
+                "references/0": "float"
+            },
+            "failure_defaults": {
+                "prediction": null
+            }
+        }
+    ],
+    "metric": {
+        "__type__": "ndcg"
+    }
+}

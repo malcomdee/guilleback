@@ -1,0 +1,24 @@
+{
+    "__type__": "normalized_sacrebleu",
+    "language_to_tokenizer": {
+        "german": null,
+        "deutch": null,
+        "de": null,
+        "french": null,
+        "fr": null,
+        "romanian": null,
+        "ro": null,
+        "english": null,
+        "en": null,
+        "spanish": null,
+        "es": null,
+        "portuguese": null,
+        "pt": null,
+        "arabic": "intl",
+        "ar": "intl",
+        "korean": "ko-mecab",
+        "ko": "ko-mecab",
+        "japanese": "ja-mecab",
+        "ja": "ja-mecab"
+    }
+}

@@ -1,0 +1,14 @@
+Flask==3.0.3
+flask-cors==5.0.0
+python-dotenv==1.0.1
+pandas==2.1.4
+requests==2.32.2
+ibm-watsonx-gov==1.1.0
+ibm-watsonx-ai>=1.3.30,<2
+ibm-cloud-sdk-core>=3.20.0
+jsonschema
+unitxt>=1.0,<2
+textstat>=0.7,<1
+scikit-learn>=1.4,<2
+nest-asyncio
+gunicorn>=21.2

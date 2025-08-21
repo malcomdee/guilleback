@@ -1,0 +1,39 @@
+{
+    "display_name": "Weather",
+    "tool_name": "weather_tool",
+    "service_provider_type": "IBM",
+    "description": "Retrieve the weather for a given location",
+    "inventory_id": "<attribute_value>",
+    "reusable": "true",
+    "category": ["Other"],
+    "framework": ["langchain","langgraph"],
+    "code": {
+        "source_code_base64": "",
+        "run_time_details": {
+            "engine": "Python 3.11"
+        }
+    },
+    "dependencies": {
+        "remote_services":[],
+        "run_time_packages":[]
+    },
+    "schema":{
+        "properties": {
+          "location": {
+            "description": "Name of the location",
+            "title": "Location",
+            "type": "string"
+          },
+          "country": {
+            "type": "string",
+            "description": "Name of the country",
+            "title": "Country"
+          }
+        },
+        "required": [
+          "location"
+        ],
+        "title": "WeatherInput",
+        "type": "object"
+      }
+}

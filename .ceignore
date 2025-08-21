@@ -1,0 +1,23 @@
+@'
+# Ignorar entornos y cachés
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Variables locales
+.env
+.env.*
+
+# Logs y artefactos
+*.log
+*.csv
+*.parquet
+*.ipynb
+
+# Repos/otros
+.git/
+node_modules/
+dist/
+build/
+'@ | Set-Content .ceignore
