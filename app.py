@@ -11,17 +11,26 @@ app = Flask(__name__)
 # CORS explícito para dev
 CORS(
     app,
-    resources={r"/api/*": {"origins": ["http://localhost:3001", "http://127.0.0.1:3001"]}},
+    resources={r"/api/*": {"origins": [
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+        "https://frontend-governance.1zcre0sjim2q.us-south.codeengine.appdomain.cloud"
+    ]}},
     methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"],
     supports_credentials=False,
 )
 
+
 # Si alguna vista no aplica CORS por error, garantizamos los headers aquí
 @app.after_request
 def add_cors_headers(resp):
     origin = request.headers.get("Origin")
-    if origin in ("http://localhost:3001", "http://127.0.0.1:3001"):
+    if origin in (
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+        "https://frontend-governance.1zcre0sjim2q.us-south.codeengine.appdomain.cloud"
+    ):
         resp.headers["Access-Control-Allow-Origin"] = origin
         resp.headers["Vary"] = "Origin"
     resp.headers["Access-Control-Allow-Methods"] = "GET,POST,OPTIONS"
