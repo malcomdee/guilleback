@@ -1,9 +1,9 @@
 import axios from "axios";
 
-const BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000";
+const BASE = import.meta.env.VITE_API_BASE || "http://localhost:8000;
 
 export async function getDefaultExercise() {
-  const r = await axios.get(`${BASE}/api/default_exercise`);
+  const r = await axios.get(`https://back-governance.1zcre0sjim2q.us-south.codeengine.appdomain.cloud/api/default_exercise`);
   return r.data;
 }
 
