@@ -100,7 +100,7 @@ export default function GovernanceDemo() {
     setRealValue(null);
 
     try {
-      const res = await fetch(`${API_BASE}/api/governance/score`, {
+      const res = await fetch(`https://back-governance.1zcre0sjim2q.us-south.codeengine.appdomain.cloud/api/governance/score`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: ex.text }),
@@ -137,7 +137,7 @@ export default function GovernanceDemo() {
     setFreeScores(null);
 
     try {
-      const res = await fetch(`${API_BASE}/api/governance/score`, {
+      const res = await fetch(`https://back-governance.1zcre0sjim2q.us-south.codeengine.appdomain.cloud/api/governance/score`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text }),
