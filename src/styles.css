@@ -1,0 +1,272 @@
+@import "@carbon/styles/css/styles.css";
+@import "@carbon/charts/styles.css";
+
+/* Tipografía IBM Plex */
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("../node_modules/@ibm/plex/IBM-Plex-Sans/fonts/complete/woff2/IBMPlexSans-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "IBM Plex Sans";
+  src: url("../node_modules/@ibm/plex/IBM-Plex-Sans/fonts/complete/woff2/IBMPlexSans-SemiBold.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root { color-scheme: light; }
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "IBM Plex Sans", system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--cds-background);
+  color: var(--cds-text-primary);
+}
+
+/* ========== Shell IBM ========== */
+.ibm-shell {
+  display: grid;
+  grid-template-rows: 56px auto;
+  min-height: 100%;
+}
+
+/* Top bar (claro, minimal) */
+.ibm-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--cds-border-subtle);
+  background: var(--cds-layer);
+}
+
+.ibm-header__logo {
+  height: 24px;
+  width: auto;
+  display: block;
+  filter: grayscale(100%);
+}
+
+.ibm-header__title {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: .2px;
+}
+
+/* Contenido centrado y con máximo ancho */
+.ibm-container {
+  width: min(1180px, 100%);
+  margin: 0 auto;
+  padding: 16px;
+  display: grid;
+  gap: 16px;
+}
+
+/* Tarjetas consistentes con Carbon */
+.ibm-card {
+  background: var(--cds-layer-01);
+  border: 1px solid var(--cds-border-subtle);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+/* Bloque de contexto */
+.ibm-context {
+  background: var(--cds-layer-01);
+  border: 1px solid var(--cds-border-subtle);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+/* Grid responsivo de preguntas */
+.ibm-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+}
+
+/* Textareas Carbon con borde más definido en focus */
+textarea.cds--text-area {
+  border-radius: 10px;
+}
+textarea.cds--text-area:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px var(--cds-focus);
+}
+
+/* Footer acciones */
+.ibm-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+/* Etiquetas y panel de sugerencia de Watsonx */
+.wx-panel {
+  border: 1px solid var(--cds-border-subtle);
+  border-radius: 10px;
+  padding: 12px;
+  background: var(--cds-layer);
+}
+.wx-suggestion {
+  background: var(--cds-layer-01);
+  padding: 10px;
+  border-radius: 8px;
+}
+
+/* Pequeños refinamientos de enlaces de fuentes */
+.ibm-links a {
+  color: var(--cds-link-primary);
+  text-decoration: none;
+  margin-right: 12px;
+}
+.ibm-links a:hover {
+  text-decoration: underline;
+}
+
+
+
+
+
+
+/* tamaño del logo en el header */
+:root { --ibm-logo-h: 100px; }              /* 32 → 36 si lo quieres aún más grande */
+
+.ibm-header { min-height: 60px; }          /* da un poco más de alto a la barra */
+.ibm-header__logo {
+  height: var(--ibm-logo-h);
+  width: auto;
+  display: block;
+  /* quita el gris si usas un PNG con fondo gris */
+  filter: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* ===== Governance Demo – límites y sticky ===== */
+:root{
+  --header-offset: 96px;
+  --bar-height: 44px;
+  --z-left: 7;
+  --z-bar: 9;
+  --z-tooltip: 20;
+}
+
+.ibm-container,
+.gov-layout,
+.gov-right { overflow: visible !important; position: relative; z-index: 0; }
+
+/* Un “contenedor de sección” para que el sticky se limite a su bloque */
+.gov-section { position: relative; }
+
+/* layout 2 columnas para el apartado de ejemplos */
+.gov-layout{
+  display: grid;
+  grid-template-columns: 360px 1fr;
+  gap: 16px;
+}
+
+/* Izquierda sticky SOLO dentro del apartado 1 */
+.gov-left{
+  position: sticky;
+  top: var(--header-offset);
+  z-index: var(--z-left);
+  align-self: start;
+  max-height: calc(100vh - (var(--header-offset) + 24px));
+  overflow: auto;
+}
+
+.examples-list{ display: grid; gap: 8px; }
+.example-btn{ justify-content: start; white-space: normal; line-height: 1.2; }
+.example-hint{ opacity: .8; }
+
+/* Derecha con espacio para la barra */
+.gov-right{
+  display: grid;
+  gap: 16px;
+  padding-top: calc(var(--bar-height) + 8px);
+}
+
+/* Barra sticky en la derecha */
+.gov-activebar{
+  top: var(--header-offset);
+  height: var(--bar-height);
+  z-index: var(--z-bar);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--cds-layer-01);
+  border-bottom: 1px solid var(--cds-border-subtle);
+  box-shadow: 0 1px 0 rgba(0,0,0,.04);
+}
+
+.gov-active-text{ display:flex; align-items:center; gap:8px; }
+.gov-chip{
+  padding: 2px 8px; border-radius:999px;
+  background: var(--cds-interactive); color:#fff; font-size:12px; font-weight:600;
+}
+.gov-ellipsis{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:min(70vw,900px); }
+.gov-error{ color: var(--cds-support-error); font-weight:500; }
+.gov-explain{ margin: 8px 0 0; color: var(--cds-text-secondary); font-size: .9rem; }
+
+.gov-grid{
+  display:grid; gap:12px;
+  grid-template-columns: repeat(auto-fit, minmax(240px,1fr));
+}
+.metric-tile{ border:1px solid var(--cds-border-subtle); background:var(--cds-layer-01); border-radius:12px; padding:12px; }
+.metric-tile.inactive{ opacity:.4; filter:grayscale(1); }
+.metric-inactive{ margin-top:8px; color: var(--cds-text-secondary); }
+.metric-header{ display:flex; justify-content:space-between; align-items:center; }
+
+.cds--cc--tooltip{ z-index: var(--z-tooltip) !important; }
+
+/* ===== Apartado 2: Texto libre centrado ===== */
+.centered-narrow{
+  width: min(980px, 100%);
+  margin: 0 auto;
+}
+
+
+
+.free-left{ display: grid; gap: 12px; }
+.free-right{ min-height: 180px; }
+.free-hint{ color: var(--cds-text-secondary); }
+
+.free-actions { display: flex; gap: 12px; align-items: center; }
+
+/* Responsive */
+@media (max-width: 980px){
+  :root{ --header-offset: 72px; }
+  .gov-layout{ grid-template-columns: 1fr; }
+  .gov-left, .gov-activebar{ top: var(--header-offset); }
+  .free-layout{ grid-template-columns: 1fr; }
+}
