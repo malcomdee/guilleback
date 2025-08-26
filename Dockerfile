@@ -16,7 +16,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Code Engine inyecta PORT, usa 8080 por defecto
-ENV PORT=8080 \
+ENV PORT=8000 \
     PYTHONUNBUFFERED=1
 
 # Arranque con gunicorn (ajusta módulo si tu app se llama distinto)
