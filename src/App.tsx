@@ -31,6 +31,20 @@ const donutMetricDefs: { key: keyof Score; label: string }[] = [
   */
 ];
 
+
+
+// --- al inicio de App.tsx, añade util cookie (igual a Welcome.tsx) ---
+function getCookie(name: string): string | null {
+  const target = `${encodeURIComponent(name)}=`;
+  const found = document.cookie
+    .split(";")
+    .map((c) => c.trim())
+    .find((c) => c.startsWith(target));
+  return found ? decodeURIComponent(found.slice(target.length)) : null;
+}
+
+
+
 function MetricTags({ r }: { r: Score }) {
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
@@ -144,6 +158,11 @@ export default function App() {
     const { results } = await evaluatePayload(payload);
     setResults(results as Score[]);
     setSubmitting(false);
+
+
+
+
+
   };
 
   const ready = (quiz?.length ?? 0) > 0 && answers.length === quiz.length;

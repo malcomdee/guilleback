@@ -270,3 +270,51 @@ textarea.cds--text-area:focus {
   .gov-left, .gov-activebar{ top: var(--header-offset); }
   .free-layout{ grid-template-columns: 1fr; }
 }
+
+
+
+
+
+
+
+/* ===== Mini donuts ===== */
+.mini-donut {
+  display: grid;
+  gap: 6px;
+  align-items: start;
+}
+.mini-donut__label {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--cds-text-secondary);
+}
+
+/* Estado gris/disabled */
+.mini-donut--disabled {
+  opacity: 0.45;
+  filter: grayscale(1);
+}
+
+/* ===== Grilla de métricas 2 columnas (siempre intenta 2 por fila) ===== */
+.metrics-2col-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+/* Responsive: en pantallas muy estrechas puede caer a 1 col */
+@media (max-width: 560px) {
+  .metrics-2col-grid { grid-template-columns: 1fr; }
+}
+
+
+
+.welcome-wrap {
+  min-height: 52vh;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+}
+.welcome-card {
+  width: min(520px, 100%);
+}
