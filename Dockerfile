@@ -20,4 +20,4 @@ ENV PORT=8000 \
     PYTHONUNBUFFERED=1
 
 # Arranque con gunicorn (ajusta módulo si tu app se llama distinto)
-CMD ["gunicorn", "-w", "2", "-k", "gthread", "-b", "0.0.0.0:${PORT}", "app:app"]
+CMD ["gunicorn", "-w", "2", "-k", "gthread", "-b", "0.0.0.0:8000", "app:app"]
