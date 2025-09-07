@@ -34,7 +34,7 @@ def add_cors_headers(resp):
     if origin in (
         "http://localhost:3001",
         "http://127.0.0.1:3001",
-        "https://frontend-governance.1zcre0sjim2q.us-south.codeengine.appdomain.cloud",
+        "https://application-36.1zvd1ciw0wl5.us-south.codeengine.appdomain.cloud",
     ):
         resp.headers["Access-Control-Allow-Origin"] = origin
         resp.headers["Vary"] = "Origin"
