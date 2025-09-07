@@ -22,7 +22,7 @@ app = Flask(__name__)
 CORS(
     app,
     resources={r"/api/*": {"origins": ["http://localhost:3001", "http://127.0.0.1:3001",
-                                       "https://frontend-governance.1zcre0sjim2q.us-south.codeengine.appdomain.cloud"]}},
+                                       "https://application-36.1zvd1ciw0wl5.us-south.codeengine.appdomain.cloud"]}},
     methods=["GET", "POST", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization", "X-User-Name"],
     supports_credentials=False,
