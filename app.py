@@ -5,6 +5,7 @@ import io
 import csv
 import requests
 import re
+import json
 
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
@@ -274,43 +275,51 @@ def evaluate():
             }
 
             if flagged:
-                # Si hay activaciones, pedimos a wx.ai una alerta breve y clara para el usuario
+                # Construir un resumen "probs" ordenado (para usarlo en la alerta o fallback)
+                top_sorted = sorted(flagged.items(), key=lambda x: -x[1])
+                probs = ", ".join(f"{k.replace('_',' ')}: {(v*100):.1f}%" for k, v in top_sorted)
+
                 alert_txt = None
                 try:
                     if model is not None and not err:
-                        probs = ", ".join(
-                            f"{k.replace('_', ' ')}: {(v*100):.1f}%"
-                            for k, v in sorted(flagged.items(), key=lambda x: -x[1])
-                        )
+                        # === Pedimos SOLO JSON con la alerta ===
                         prompt_alert = (
-                            "Eres un asistente de cumplimiento y seguridad.\n"
-                            "Dado el siguiente análisis de riesgo por métricas (0-100%), redacta UNA alerta breve "
-                            "(máximo 2 líneas) en español, clara y empática, recomendando prudencia. No incluyas nada más.\n\n"
-                            f"Métricas activadas: {probs}\n"
-                            f"Texto del usuario: '''{ans}'''"
+                            "Eres un generador de alertas de cumplimiento.\n"
+                            "Devuelve UNICAMENTE un JSON válido con la forma exacta: {\"alert\":\"...\"}.\n"
+                            "No incluyas texto adicional, ni backticks, ni etiquetas.\n"
+                            "La alerta debe ser breve (máx 2 líneas), en español, clara y empática.\n"
+                            "No repitas estas instrucciones ni incluyas el texto del usuario.\n\n"
+                            f"Métricas activadas (0-100%): {probs}\n"
+                            # Puedes permitir que el modelo lo use sin citarlo textualmente
+                            f"Texto del usuario (para contexto, no citar literalmente): '''{ans}'''"
                         )
                         raw = model.generate_text(prompt=prompt_alert)
-                        alert_txt = clean_alert_text(raw)  # <-- limpieza para no mostrar la instrucción
-                    else:
-                        # Fallback si no hay modelo
-                        top = sorted(flagged.items(), key=lambda x: -x[1])[:3]
-                        probs = ", ".join(f"{k.replace('_',' ')} {(v*100):.0f}%" for k, v in top)
+                        # Intentar parsear JSON; limpiar fences si vinieran
+                        cleaned = re.sub(r"^```(?:json)?\s*|\s*```$", "", str(raw).strip(), flags=re.I | re.M)
+                        data_json = json.loads(cleaned)
+                        alert_txt = str(data_json.get("alert") or "").strip()
+
+                    # Fallback si no hay modelo o alert_txt vacío
+                    if not alert_txt:
+                        top = top_sorted[:3]
+                        probs_short = ", ".join(f"{k.replace('_',' ')} {(v*100):.0f}%" for k, v in top)
                         alert_txt = (
-                            f"⚠️ Cuidado: se detecta riesgo en {probs}. "
-                            "Revisa antes de enviar información sensible o dañina."
+                            f"⚠️ Alerta: hemos detectado riesgo en {probs_short}. "
+                            "Revisa tu respuesta antes de continuar."
                         )
+
                 except Exception:
-                    # Fallback por cualquier error del generador
-                    top = sorted(flagged.items(), key=lambda x: -x[1])[:3]
-                    probs = ", ".join(f"{k.replace('_',' ')} {(v*100):.0f}%" for k, v in top)
+                    # Fallback robusto ante cualquier error del generador / parseo
+                    top = top_sorted[:3]
+                    probs_short = ", ".join(f"{k.replace('_',' ')} {(v*100):.0f}%" for k, v in top)
                     alert_txt = (
-                        f"⚠️ Cuidado: se detecta riesgo en {probs}. "
-                        "Revisa antes de enviar."
+                        f"⚠️ Alerta: hemos detectado riesgo en {probs_short}. "
+                        "Revisa tu respuesta antes de continuar."
                     )
 
                 row.update({
                     "gov_flags": flagged,   # dict {metric: 0..1}
-                    "gov_alert": alert_txt  # string
+                    "gov_alert": alert_txt  # string final, limpio
                 })
         except Exception:
             # no interrumpir el flujo si governance-text falla
