@@ -5,7 +5,7 @@ import { Score } from "./types";
 
 // 🔧 Ajusta si usas local o CE
 const API_BASE =
-  "http://localhost:8000";
+  "https://application-33.1zvd1ciw0wl5.us-south.codeengine.appdomain.cloud";
 // const API_BASE = "http://localhost:8000";
 
 import ExamplesList, { GovExample } from "./components/ExamplesList";

@@ -4,6 +4,7 @@ import { DonutChart } from "@carbon/charts-react";
 import { Exercise, Score } from "./types";
 import { getDefaultExercise, evaluatePayload } from "./api";
 import GovernanceDemo from "./GovernanceDemo";
+import Tablelazo from "./ResultsTable";
 import image from "../assets/Picture1.png";
 
 // ====== Utils ======
@@ -17,23 +18,9 @@ const donutMetricDefs: { key: keyof Score; label: string }[] = [
   { key: "faithfulness", label: "Faithfulness" },
   { key: "answer_relevance", label: "Answer Relevance" },
   { key: "context_relevance", label: "Context Relevance" },
- /*
-  { key: "evasiveness", label: "Evasiveness" },
-  { key: "topic_relevance", label: "Topic Relevance" },
-  { key: "profanity", label: "Profanity" },
-  { key: "sexual_content", label: "Sexual Content" },
-  { key: "violence", label: "Violence" },
-  { key: "social_bias", label: "Social Bias" },
-  { key: "harm", label: "Harm" },
-  { key: "harm_engagement", label: "Harm Engagement" },
-  { key: "jailbreak", label: "Jailbreak" },
-  { key: "unethical_behavior", label: "Unethical Behavior" },
-  */
 ];
 
-
-
-// --- al inicio de App.tsx, añade util cookie (igual a Welcome.tsx) ---
+// Cookie helper
 function getCookie(name: string): string | null {
   const target = `${encodeURIComponent(name)}=`;
   const found = document.cookie
@@ -43,27 +30,25 @@ function getCookie(name: string): string | null {
   return found ? decodeURIComponent(found.slice(target.length)) : null;
 }
 
-
-
 function MetricTags({ r }: { r: Score }) {
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center", flexWrap: "wrap" }}>
+      {/* 4 métricas de calidad */}
       {r.answer_similarity != null && <Tag type="green">Similarity: {pct(r.answer_similarity)}</Tag>}
       {r.faithfulness != null && <Tag type="blue">Faithfulness: {pct(r.faithfulness)}</Tag>}
       {r.answer_relevance != null && <Tag type="cyan">Ans Rel: {pct(r.answer_relevance)}</Tag>}
       {r.context_relevance != null && <Tag type="teal">Ctx Rel: {pct(r.context_relevance)}</Tag>}
-{/*
-  {r.evasiveness != null && <Tag type="purple">Evasiveness: {pct(r.evasiveness)}</Tag>}
-  {r.topic_relevance != null && <Tag type="gray">Topic Rel: {pct(r.topic_relevance)}</Tag>}
-  {r.text_reading_ease != null && <Tag type="cool-gray">Flesch: {r.text_reading_ease.toFixed(1)}</Tag>}
-  {r.text_grade_level != null && <Tag type="warm-gray">F-K Grade: {r.text_grade_level.toFixed(1)}</Tag>}
-  {(r.hap_flag || r.pii_flag) && <span style={{ width: 8 }} />}
-  {r.hap_flag && <Tag type="red">HAP detectado</Tag>}
-  {Array.isArray(r.hap_labels) && r.hap_labels.map((lbl, i) => (<Tag key={`hap-${i}`} type="red">{lbl}</Tag>))}
-  {r.pii_flag && <Tag type="magenta">PII detectado</Tag>}
-  {Array.isArray(r.pii_entities) && r.pii_entities.map((ent, i) => (<Tag key={`pii-${i}`} type="magenta">{ent}</Tag>))}
-*/}
 
+      {/* Governance extra (métricas que no son las 4 de calidad) */}
+      {r.gov_flags &&
+        Object.entries(r.gov_flags)
+          .filter(([, v]) => typeof v === "number" && v > 0)
+          .sort((a, b) => (b[1] as number) - (a[1] as number))
+          .map(([k, v]) => (
+            <Tag key={k} type="red">
+              {k.replaceAll("_", " ")}: {(Number(v) * 100).toFixed(1)}%
+            </Tag>
+          ))}
     </div>
   );
 }
@@ -72,14 +57,23 @@ function MetricDonuts({ r }: { r: Score }) {
   const donuts = useMemo(
     () =>
       donutMetricDefs
-        .map((def) => ({ ...def, value: (r[def.key] as number | null | undefined) ?? null }))
+        .map((def) => ({
+          ...def,
+          value: (r[def.key] as number | null | undefined) ?? null,
+        }))
         .filter((m) => m.value != null),
     [r]
   );
   if (!donuts.length) return null;
 
   return (
-    <div style={{ display: "grid", gap: 8, gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))" }}>
+    <div
+      style={{
+        display: "grid",
+        gap: 8,
+        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+      }}
+    >
       {donuts.map((m, i) => (
         <DonutChart
           key={i}
@@ -87,7 +81,12 @@ function MetricDonuts({ r }: { r: Score }) {
             { group: m.label, value: toPctNum(m.value) },
             { group: "Resto", value: 100 - toPctNum(m.value) },
           ]}
-          options={{ title: m.label, height: "200px", legend: { alignment: "center" }, tooltip: { enabled: true } }}
+          options={{
+            title: m.label,
+            height: "200px",
+            legend: { alignment: "center" },
+            tooltip: { enabled: true },
+          }}
         />
       ))}
     </div>
@@ -96,14 +95,19 @@ function MetricDonuts({ r }: { r: Score }) {
 
 function WxCorrection({ r, idx }: { r: Score; idx: number }) {
   React.useEffect(() => {
-    if (r && r.wx_raw) {
+    if (r && (r as any).wx_raw) {
       // eslint-disable-next-line no-console
-      console.log(`[wx.ai][Pregunta ${idx + 1}] raw:`, r.wx_raw);
+      console.log(`[wx.ai][Pregunta ${idx + 1}] raw:`, (r as any).wx_raw);
     }
   }, [r, idx]);
 
   if (!r.wx_verdict && !r.wx_explanation && !r.wx_improved_answer) return null;
-  const verdictType = r.wx_verdict === "Correcta" ? "green" : r.wx_verdict === "Mejorable" ? "yellow" : "red";
+  const verdictType =
+    r.wx_verdict === "Correcta"
+      ? "green"
+      : r.wx_verdict === "Mejorable"
+      ? "yellow"
+      : "red";
 
   return (
     <div className="wx-panel">
@@ -122,8 +126,8 @@ function WxCorrection({ r, idx }: { r: Score; idx: number }) {
 }
 
 export default function App() {
-  // Tabs: "exercise" y "govdemo"
-  const [tab, setTab] = useState<"exercise" | "govdemo">("exercise");
+  // Tabs: "exercise" y "govdemo" y "tablezazo"
+  const [tab, setTab] = useState<"exercise" | "govdemo" | "tablezazo">("exercise");
 
   // Estado ejercicio
   const [exercise, setExercise] = useState<Exercise>({});
@@ -149,7 +153,10 @@ export default function App() {
     if (!quiz.length) return;
     setSubmitting(true);
     const payload = {
-      quiz: quiz.map((q) => ({ question: q.question, ideal_answer: q.ideal_answer })),
+      quiz: quiz.map((q) => ({
+        question: q.question,
+        ideal_answer: q.ideal_answer,
+      })),
       answers,
       context: exercise.objective || "",
       system_prompt: systemPrompt,
@@ -159,10 +166,25 @@ export default function App() {
     setResults(results as Score[]);
     setSubmitting(false);
 
-
-
-
-
+    // Guardado en Db2 (solo las 4 métricas/ux + veredicto)
+    try {
+      const slim = (results as Score[]).map((r) => ({
+        wx_verdict: r.wx_verdict,
+        answer_similarity: r.answer_similarity ?? null,
+        answer_relevance: r.answer_relevance ?? null,
+        faithfulness: r.faithfulness ?? null,
+        context_relevance: r.context_relevance ?? null,
+      }));
+      const name = getCookie("wx_name") || "Anon";
+      await fetch("https://application-33.1zvd1ciw0wl5.us-south.codeengine.appdomain.cloud/api/save_results", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, results: slim }),
+      });
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error("Error guardando en Db2:", e);
+    }
   };
 
   const ready = (quiz?.length ?? 0) > 0 && answers.length === quiz.length;
@@ -185,6 +207,9 @@ export default function App() {
             <Button kind={tab === "govdemo" ? "primary" : "tertiary"} onClick={() => setTab("govdemo")}>
               Governance Demo
             </Button>
+            <Button kind={tab === "tablezazo" ? "primary" : "tertiary"} onClick={() => setTab("tablezazo")}>
+              Resultados
+            </Button>
           </div>
 
           {/* Pestaña: Ejercicio */}
@@ -202,7 +227,11 @@ export default function App() {
                       {exercise.used_sources.map((u, i) => (
                         <a key={i} href={u} target="_blank" rel="noreferrer">
                           {(() => {
-                            try { return new URL(u).hostname; } catch { return u; }
+                            try {
+                              return new URL(u).hostname;
+                            } catch {
+                              return u;
+                            }
                           })()}
                         </a>
                       ))}
@@ -224,7 +253,11 @@ export default function App() {
                   />
                 </label>
                 <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <input type="checkbox" checked={normalize} onChange={(e) => setNormalize(e.target.checked)} />
+                  <input
+                    type="checkbox"
+                    checked={normalize}
+                    onChange={(e) => setNormalize(e.target.checked)}
+                  />
                   Normalizar respuestas (sin tildes/puntuación)
                 </label>
               </section>
@@ -232,7 +265,7 @@ export default function App() {
               {ready && (
                 <div className="ibm-grid">
                   {quiz.map((q, idx) => {
-                    const r = results[idx] || {};
+                    const r = (results[idx] || {}) as Score;
                     return (
                       <section key={idx} className="ibm-card" style={{ display: "grid", gap: 12 }}>
                         <div>
@@ -259,6 +292,21 @@ export default function App() {
                           <MetricTags r={r} />
                           <MetricDonuts r={r} />
                           <WxCorrection r={r} idx={idx} />
+
+                          {/* Alerta de governance (si hay métricas de riesgo > 0) */}
+                          {r.gov_alert && (
+                            <div
+                              style={{
+                                border: "1px solid #fecaca",
+                                background: "#fff1f2",
+                                color: "#991b1b",
+                                padding: "10px 12px",
+                                borderRadius: 8,
+                              }}
+                            >
+                              <strong>Alerta:</strong> {r.gov_alert}
+                            </div>
+                          )}
                         </div>
                       </section>
                     );
@@ -277,6 +325,9 @@ export default function App() {
 
           {/* Pestaña: Governance Demo */}
           {tab === "govdemo" && <GovernanceDemo />}
+
+          {/* Pestaña: Resultados/Db2 */}
+          {tab === "tablezazo" && <Tablelazo />}
         </main>
       </div>
     </Theme>
