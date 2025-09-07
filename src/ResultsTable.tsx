@@ -14,7 +14,7 @@ type Row = {
   CONTEXT_RELEVANCE: number | string | null;  // 0..100
 };
 
-const API_BASE = "http://127.0.0.1:8000";
+const API_BASE = "https://application-33.1zvd1ciw0wl5.us-south.codeengine.appdomain.cloud";
 const METRIC_KEY: keyof Row = "ANSWER_SIMILARITY";
 
 /* ============== Utils ============== */
