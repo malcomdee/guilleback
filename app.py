@@ -4,6 +4,7 @@ import datetime
 import io
 import csv
 import requests
+import re
 
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
@@ -70,11 +71,11 @@ DEFAULT_QUIZ = [
 # Db2 REST — configurado “como la CMD”
 # -----------------------
 # Si quieres volver a .env, reemplaza estas 4 constantes por os.getenv(...)
-DB2_REST_BASE      = "https://bpe61bfd0365e9u4psdglite.db2.cloud.ibm.com"
-DB2_DEPLOYMENT_ID  = "crn:v1:bluemix:public:dashdb-for-transactions:us-south:a/7dafd2ae87234398aec154c03719e731:3f712fbd-c394-4b1f-992c-4692770837e7::"
-DB2_UID            = "vnv00798"
-DB2_PWD            = "KPnMOP2t3mM2Kq9X"
-
+DB2_REST_BASE     = os.getenv("DB2_REST_BASE", "https://api.db2.cloud.ibm.com/v5/ibm")
+DB2_DEPLOYMENT_ID = os.getenv("DB2_DEPLOYMENT_ID")
+DB2_UID           = os.getenv("DB2_UID")
+DB2_PWD           = os.getenv("DB2_PWD")
+DB2_DB            = os.getenv("DB2_DB", "bludb")
 # schema/tabla EXACTOS (con comillas) como en tu prueba
 DB2_SCHEMA = DB2_UID.upper()                 # -> VNV00798
 TABLE_NAME = "GOVERNANCE_RESULTS"
@@ -85,10 +86,17 @@ def _rest_headers(token: str | None = None):
     if token:
         h["Authorization"] = f"Bearer {token}"
     return h
+def _dbapi_base() -> str:
+    """Lee DB2_DBAPI_BASE del .env (p.ej. https://bpe61bfd0365e9u4psdglite.db2.cloud.ibm.com/dbapi/v4)."""
+    b = os.getenv("DB2_DBAPI_BASE")
+    if not b:
+        raise RuntimeError("DB2_DBAPI_BASE no definido en .env (debe terminar en /dbapi/v4)")
+    return b.rstrip("/")
 
 def _db2_rest_token() -> str:
-    url = f"{DB2_REST_BASE}/dbapi/v4/auth/tokens"
-    r = requests.post(url, headers=_rest_headers(), json={"userid": DB2_UID, "password": DB2_PWD}, timeout=30)
+    url = f"{_dbapi_base()}/auth/tokens"
+    r = requests.post(url, headers=_rest_headers(),
+                      json={"userid": DB2_UID, "password": DB2_PWD}, timeout=30)
     if r.status_code >= 300:
         raise RuntimeError(f"Error auth REST Db2: {r.status_code} {r.text}")
     data = r.json() if r.text else {}
@@ -97,9 +105,10 @@ def _db2_rest_token() -> str:
         raise RuntimeError(f"Auth sin token: {data}")
     return tok
 
+
 def _db2_sql_job(token: str, commands: str, *, limit: int = 1000, stop_on_error: str = "yes") -> str:
     r = requests.post(
-        f"{DB2_REST_BASE}/dbapi/v4/sql_jobs",
+        f"{_dbapi_base()}/sql_jobs",
         headers=_rest_headers(token),
         json={"commands": commands, "limit": limit, "separator": ";", "stop_on_error": stop_on_error},
         timeout=60,
@@ -111,8 +120,9 @@ def _db2_sql_job(token: str, commands: str, *, limit: int = 1000, stop_on_error:
         raise RuntimeError(f"Respuesta sin id de job: {r.text}")
     return job_id
 
+
 def _db2_sql_fetch(token: str, job_id: str, timeout_sec: int = 30) -> dict:
-    url = f"{DB2_REST_BASE}/dbapi/v4/sql_jobs/{job_id}"
+    url = f"{_dbapi_base()}/sql_jobs/{job_id}"
     t0 = time.time()
     while True:
         r = requests.get(url, headers=_rest_headers(token), timeout=30)
@@ -127,6 +137,7 @@ def _db2_sql_fetch(token: str, job_id: str, timeout_sec: int = 30) -> dict:
         if time.time() - t0 > timeout_sec:
             return data
         time.sleep(0.8)
+
 
 def _ensure_results_table(token: str):
     check_sql = f"""
@@ -415,6 +426,8 @@ def save_results():
         return jsonify({"ok": False, "error": str(e)}), 500
 
 # ====== Helpers para /api/results ======
+
+
 def _parse_date_any(d: str | None) -> str | None:
     """Acepta YYYY-MM-DD o DD-MM-YYYY (o con /). Devuelve YYYY-MM-DD o None."""
     if not d:
