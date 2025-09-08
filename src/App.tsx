@@ -176,7 +176,7 @@ export default function App() {
         context_relevance: r.context_relevance ?? null,
       }));
       const name = getCookie("wx_name") || "Anon";
-      await fetch("https://application-33.1zvd1ciw0wl5.us-south.codeengine.appdomain.cloud/api/save_results", {
+      await fetch("http://localhost:8000/api/save_results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, results: slim }),
@@ -241,26 +241,6 @@ export default function App() {
               )}
 
               {/* Opciones */}
-              <section className="ibm-card" style={{ display: "grid", gap: 8 }}>
-                <label>
-                  <div style={{ fontWeight: 600 }}>System prompt</div>
-                  <textarea
-                    value={systemPrompt}
-                    onChange={(e) => setSystemPrompt(e.target.value)}
-                    rows={3}
-                    className="cds--text-area"
-                    style={{ width: "100%" }}
-                  />
-                </label>
-                <label style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                  <input
-                    type="checkbox"
-                    checked={normalize}
-                    onChange={(e) => setNormalize(e.target.checked)}
-                  />
-                  Normalizar respuestas (sin tildes/puntuación)
-                </label>
-              </section>
 
               {ready && (
                 <div className="ibm-grid">
