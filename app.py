@@ -69,6 +69,33 @@ DEFAULT_QUIZ = [
 ]
 
 
+
+
+
+
+
+
+
+# arriba de evaluate()
+METRIC_LABELS = {
+    "unethical_behavior": "Unethical Behavior",
+    "harm_engagement": "Harm Engagement",
+    "profanity": "Profanity",
+    "sexual_content": "Sexual Content",
+    "violence": "Violence",
+    "social_bias": "Social Bias",
+    "harm": "Harm",
+    "jailbreak": "Jailbreak",
+    "evasiveness": "Evasiveness",
+    "topic_relevance": "Topic Relevance",
+    "answer_similarity": "Answer Similarity",
+    "answer_relevance": "Answer Relevance",
+    "faithfulness": "Faithfulness",
+    "context_relevance": "Context Relevance",
+}
+def label_of(k: str) -> str:
+    return METRIC_LABELS.get(k, k.replace("_"," ").title())
+
 # -----------------------
 # Db2 REST — configurado “como la CMD”
 # -----------------------
@@ -284,7 +311,7 @@ def evaluate():
                             for k, v in sorted(flagged.items(), key=lambda x: -x[1])
                         )
                         prompt_alert = (
-                            f"Eres un asistente de cumplimiento y seguridad. Redacta UNA breve alerta en español, clara y empática, recomendando prudencia. Menciona las probabilidades de governance que se detectaron {probs} y el tipo de metrica que se detecto, haz esto en 2 lineas máximo"
+                            f"Eres un asistente de cumplimiento y seguridad. Redacta UNA breve alerta en español pero deja los nombres de las métricas en inglés, clara y empática, recomendando prudencia. Menciona las probabilidades de governance que se detectaron con su nombre en inglés {probs} y el tipo de metrica que se detecto, haz esto en 2 lineas máximo"
                         )
                         raw = model.generate_text(prompt=prompt_alert)
                         alert_txt = clean_alert_text(raw)  # <-- limpieza para no mostrar la instrucción
