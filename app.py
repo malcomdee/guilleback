@@ -75,27 +75,6 @@ DEFAULT_QUIZ = [
 
 
 
-
-# arriba de evaluate()
-METRIC_LABELS = {
-    "unethical_behavior": "Unethical Behavior",
-    "harm_engagement": "Harm Engagement",
-    "profanity": "Profanity",
-    "sexual_content": "Sexual Content",
-    "violence": "Violence",
-    "social_bias": "Social Bias",
-    "harm": "Harm",
-    "jailbreak": "Jailbreak",
-    "evasiveness": "Evasiveness",
-    "topic_relevance": "Topic Relevance",
-    "answer_similarity": "Answer Similarity",
-    "answer_relevance": "Answer Relevance",
-    "faithfulness": "Faithfulness",
-    "context_relevance": "Context Relevance",
-}
-def label_of(k: str) -> str:
-    return METRIC_LABELS.get(k, k.replace("_"," ").title())
-
 # -----------------------
 # Db2 REST — configurado “como la CMD”
 # -----------------------
