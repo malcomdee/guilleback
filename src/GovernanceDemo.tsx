@@ -185,7 +185,6 @@ export default function GovernanceDemo() {
               {/* Derecha: barra + grilla 2× de donuts (gris por defecto) */}
               <section className="gov-right">
                 <ActiveBar
-                  text={activeEx?.text}
                   loading={!!loadingExId}
                   error={error}
                 />
