@@ -13,7 +13,7 @@ import ActiveBar from "./components/ActiveBar";
 import MetricsGrid from "./components/MetricsGrid";
 
 /** Métricas que mostramos en la grilla (2 por fila via CSS) */
-const GOV_METRICS: { key: keyof Score; label: string }[] = [
+const ALL_GOV_METRICS: { key: keyof Score; label: string }[] = [
   { key: "answer_similarity", label: "Answer Similarity" },
   { key: "faithfulness", label: "Faithfulness" },
   { key: "answer_relevance", label: "Answer Relevance" },
@@ -29,6 +29,7 @@ const GOV_METRICS: { key: keyof Score; label: string }[] = [
   { key: "jailbreak", label: "Jailbreak" },
   { key: "unethical_behavior", label: "Unethical Behavior" },
 ];
+
 
 /** 7 ejemplos: se envían al MISMO endpoint que “texto libre” */
 const GOV_EXAMPLES: GovExample[] = [
@@ -75,6 +76,15 @@ const GOV_EXAMPLES: GovExample[] = [
     hint: "Harm Engagement + Jailbreak + Unethical",
   },
 ];
+const HIDE_KEYS: (keyof Score)[] = [
+  "answer_similarity",
+  "faithfulness",
+  "answer_relevance",
+  "context_relevance",
+  "topic_relevance",
+];
+const GOV_METRICS = ALL_GOV_METRICS.filter(m => !HIDE_KEYS.includes(m.key));
+
 
 export default function GovernanceDemo() {
   /* ===== Ejemplos ===== */
