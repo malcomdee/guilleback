@@ -176,7 +176,7 @@ export default function App() {
         context_relevance: r.context_relevance ?? null,
       }));
       const name = getCookie("wx_name") || "Anon";
-      await fetch("http://localhost:8000/api/save_results", {
+      await fetch("https://application-33.1zvd1ciw0wl5.us-south.codeengine.appdomain.cloud/api/save_results", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, results: slim }),
