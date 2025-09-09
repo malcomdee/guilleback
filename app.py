@@ -192,6 +192,32 @@ def _pct100(x):
 def health():
     return {"ok": True}
 
+
+
+
+
+
+
+def extract_alert_text(raw: str, max_chars: int = 220) -> str | None:
+    """Intenta recuperar {"alert": "..."} del output. Fallback: None."""
+    s = str(raw or "").strip()
+    # quita fences ```...```
+    s = re.sub(r"^```(?:json)?\s*|\s*```$", "", s, flags=re.I | re.M)
+    # busca el ÚLTIMO objeto JSON y toma 'alert'
+    last_obj = None
+    for m in re.finditer(r"\{[\s\S]*?\}", s):
+        try:
+            obj = json.loads(m.group(0))
+            if isinstance(obj, dict) and isinstance(obj.get("alert"), str):
+                last_obj = obj
+        except Exception:
+            continue
+    if last_obj and last_obj.get("alert"):
+        out = re.sub(r"\s+", " ", last_obj["alert"]).strip()
+        return out[:max_chars]
+    return None
+
+
 # ---------------- Helper para limpiar la alerta ----------------
 def clean_alert_text(text: str, max_lines: int = 20, max_chars: int = 2000) -> str:
     """
@@ -290,10 +316,25 @@ def evaluate():
                             for k, v in sorted(flagged.items(), key=lambda x: -x[1])
                         )
                         prompt_alert = (
-                            f"Eres un asistente de cumplimiento y seguridad. Redacta UNA breve alerta en español pero deja los nombres de las métricas en inglés, clara y empática, recomendando prudencia. Menciona las probabilidades de governance que se detectaron con su nombre en inglés {probs} y el tipo de metrica que se detecto, haz esto en 2 lineas máximo"
+                            f"Tarea: crea una alerta breve en español con estos pares métrica-porcentaje "
+                            f"(mantén EXACTAMENTE los nombres en inglés): {probs}. "
+                            "Salida: devuelve ÚNICAMENTE un objeto JSON válido con una sola clave 'alert', "
+                            "cuyo valor es una línea (≤220 caracteres) con tono profesional y empático, "
+                            "recomendando prudencia/mitigación; si alguna probabilidad ≥90% incluye la palabra 'urgente'. "
+                            "Prohibido: texto fuera del JSON, encabezados, saludos, listas, código, markdown, enlaces, "
+                            "repetir instrucciones o traducir nombres de métricas. Sin backticks."
                         )
+
                         raw = model.generate_text(prompt=prompt_alert)
-                        alert_txt = clean_alert_text(raw)  # <-- limpieza para no mostrar la instrucción
+                        alert_txt = extract_alert_text(raw)
+                        if not alert_txt:
+                            # Fallback: mensaje breve sin modelo (por si el LLM desobedece)
+                            top = sorted(flagged.items(), key=lambda x: -x[1])[:3]
+                            probs_plain = ", ".join(f"{k.replace('_',' ')} {(v*100):.1f}%" for k, v in top)
+                            alert_txt = (
+                                f"{probs_plain}. Revise y mitigue antes de compartir; urgente si aplica."
+                            )
+                        # <-- limpieza para no mostrar la instrucción
                     else:
                         # Fallback si no hay modelo
                         top = sorted(flagged.items(), key=lambda x: -x[1])[:3]
