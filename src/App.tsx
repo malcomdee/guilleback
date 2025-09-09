@@ -219,7 +219,7 @@ export default function App() {
 
               {exercise.objective && (
                 <section className="ibm-context">
-                  <strong>Contexto (puedes ocultarlo):</strong>
+                  <strong>Contexto</strong>
                   <p style={{ margin: "6px 0", whiteSpace: "pre-wrap" }}>{exercise.objective}</p>
                   {!!exercise.used_sources?.length && (
                     <p className="ibm-links" style={{ margin: "8px 0 0 0" }}>
